@@ -1,0 +1,64 @@
+artifact_id: "0f7f4c9e-7f7e-4d6e-b95a-9ecf1d45d001"
+artifact_type: "observational.wearable.heart_rate.sample"
+schema_version: "1.0.0"
+
+authority_level: "authoritative"
+artifact_class: "observational"
+lifecycle_state: "finalized"
+
+created_at: "2026-05-27T18:42:11Z"
+observed_at: "2026-05-27T18:41:00Z"
+
+content_hash: "0000000000000000000000000000000000000000000000000000000000000000"
+content_hash_algorithm: "sha256"
+hash_scope_version: "1.0"
+canonical_time_refs: []
+modality_refs:
+  - "galaxy_watch_7_hr"
+
+modality:
+  modality_type: "wearable_sensor"
+  modality_name: "galaxy_watch_7_hr"
+
+payload:
+  heart_rate_bpm: 78
+
+quality_metadata:
+  confidence_score: 0.98
+  corruption_state: "none"
+  signal_quality: "high"
+
+missingness_metadata:
+  delayed: false
+  estimated: false
+  partial: false
+
+provenance:
+  provenance_type: "observational"
+  provenance_version: "1.0"
+  provenance_timestamp: "2026-05-27T18:42:11Z"
+  provenance_agent: "local_system:samsung_health_export"
+  ingestion_source: "samsung_health_export"
+  ingestion_version: "0.1.0"
+  device_id: "local_device_alias"
+  source_device: "galaxy_watch_7"
+  sensor_type: "heart_rate"
+  firmware_version: "unknown"
+  sampling_rate_hz: 1.0
+  clock_source: "device_clock"
+  ingestion_pipeline: "samsung_health_export"
+  observation_timestamp: "2026-05-27T18:41:00Z"
+  ingestion_timestamp: "2026-05-27T18:42:11Z"
+  timezone: "UTC"
+  collection_method: "passive_sensor_capture"
+
+lineage:
+  derived_from: []
+  observed_from: []
+  aggregated_from: []
+  referenced_by: []
+
+tags:
+  - "wearable"
+  - "heart_rate"
+  - "passive_collection"
