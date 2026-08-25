@@ -30,7 +30,7 @@ jobs:
           pip install torch --index-url https://download.pytorch.org/whl/cpu
           pip install "scikit-learn>=1.4"
       - name: Run Python test suite
-        run: python -m pytest tests/ -v --tb=short -m "not e2e"
+        run: python -m pytest tests/ -v --tb=short
       - name: Upload failure log (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
