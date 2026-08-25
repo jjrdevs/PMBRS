@@ -1,0 +1,21 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'com.android.application' version '8.9.1' apply false
+    id 'org.jetbrains.kotlin.android' version '2.1.20' apply false
+}
+
+// Helper task to run the staged-sync integration script from Gradle.
+def stagedPort = project.findProperty('stagedPort') ?: '8080'
+def stagedToken = project.findProperty('stagedToken') ?: 'test-token'
+
+tasks.register('runStagedSyncIntegration', Exec) {
+    group = 'verification'
+    description = 'Start local mock auth server and POST a test payload (uses scripts/run_staged_sync_integration.sh)'
+    commandLine 'bash', 'scripts/run_staged_sync_integration.sh', stagedPort, stagedToken
+}

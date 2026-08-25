@@ -1,0 +1,76 @@
+artifact_id: "ce7b2fd2-9c0f-43f6-91bc-cf4c77410001"
+artifact_type: "derived.embedding.behavioral_state"
+schema_version: "1.0.0"
+
+authority_level: "derived"
+artifact_class: "embedding"
+lifecycle_state: "finalized"
+
+created_at: "2026-05-27T19:02:00Z"
+
+content_hash: "0000000000000000000000000000000000000000000000000000000000000000"
+content_hash_algorithm: "sha256"
+hash_scope_version: "1.0"
+canonical_time_refs:
+  - "2026-05-27T18:00:00Z"
+  - "2026-05-27T19:00:00Z"
+modality_refs:
+  - "behavioral_state"
+
+payload:
+  embedding_model: "behavioral_embedding_v0"
+  embedding_dimension: 8
+
+  embedding_vector:
+    - 0.142
+    - -0.883
+    - 0.291
+    - 0.004
+    - 0.551
+    - -0.217
+    - 0.771
+    - -0.129
+
+window_scope:
+  start_time: "2026-05-27T18:00:00Z"
+  end_time: "2026-05-27T19:00:00Z"
+
+quality_metadata:
+  confidence_score: 0.79
+
+lineage:
+  derived_from:
+    - "91cbd47d-30b1-4824-94b5-6d2d1c5b3001"
+  observed_from: []
+  aggregated_from: []
+  referenced_by: []
+
+provenance:
+  provenance_type: "computational"
+  provenance_version: "1.0"
+  provenance_timestamp: "2026-05-27T19:02:00Z"
+  provenance_agent: "local_system:embedding_pipeline"
+  model_name: "behavioral_embedding_v0"
+  model_version: "behavioral_embedding_v0"
+  feature_config:
+    config_id: "behavioral_embedding_v0"
+    description: "Behavioral embedding generation"
+  execution_environment:
+    platform: "local_gpu"
+    runtime: "python"
+  input_artifact_refs:
+    - "91cbd47d-30b1-4824-94b5-6d2d1c5b3001"
+  random_seed: 42
+  parameter_hash: "hash_placeholder_2"
+  execution_timestamp: "2026-05-27T19:02:00Z"
+  software_version: "embedding_pipeline_v1.0"
+
+reproducibility:
+  reproducible: true
+  deterministic: false
+  stochastic_seed: 42
+
+tags:
+  - "embedding"
+  - "behavioral_representation"
+  - "latent_state"

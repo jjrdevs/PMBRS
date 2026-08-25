@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "event_type": "browser_visit",
+  "source_app": "bromite",
+  "app_id": "org.bromite.browser",
+  "device_id": "device-opaque-hash",
+  "visit_id": "7f3d9a8c-0000-4000-8000-000000000000",
+  "canonical_host": "example.com",
+  "page_title": "Example — News",
+  "visit_start_ms": 1692364800000,
+  "visit_end_ms": 1692364865000,
+  "dwell_ms": 65000,
+  "category": "news",
+  "input_context": {"type": "search", "focused": true, "submitted": false},
+  "provenance": {"collected_by": "bromite", "collection_version": "0.1.0", "collection_mode": "opt-in", "recorded_at_ms": 1692364870000},
+  "raw_content_blocked": true
+}

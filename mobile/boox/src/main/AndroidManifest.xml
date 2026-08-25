@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- setExactAndAllowWhileIdle for the daily 02:00 wake (Android 12+). -->
+    <uses-permission apiLevel="33" android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission apiLevel="31" android:name="android.permission.USE_EXACT_ALARM" />
+    <!-- Required to read .noteCache and .ksync under /storage/emulated/0
+         (shared-storage dot-dirs the ONYX note app writes, owned root:all). -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".BooxApp"
+        android:label="PMBRS Boox Sync"
+        android:allowBackup="false"
+        android:theme="@android:style/Theme.NoDisplay">
+
+        <!-- Headless foreground service (ADR-020 D3): the notification is the UI.
+             Exported so the host/adb can `am start-foreground-service` it to
+             trigger a one-shot pass (Android 12+ blocks implicit starts of
+             non-exported services). Only reachable from the device-local USB
+             shell or the app itself — no network surface. -->
+        <service
+            android:name=".BooxSyncService"
+            android:exported="true"
+            android:foregroundServiceType="dataSync">
+            <intent-filter>
+                <action android:name="com.pmbrs.boox.RUN_SYNC" />
+            </intent-filter>
+        </service>
+
+        <!-- Operator control surface (ADR-020 D3, no-UI app):
+             - am broadcast -a com.pmbrs.boox.SYNC          (kick a pass now)
+             - am broadcast -a com.pmbrs.boox.SCHEDULE      (re-arm the daily alarm)
+             - am broadcast -a com.pmbrs.boox.RESET_TRACKING [noteUuid=…] (push tracking) -->
+        <receiver
+            android:name=".CommandReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.pmbrs.boox.SYNC" />
+                <action android:name="com.pmbrs.boox.SCHEDULE" />
+                <action android:name="com.pmbrs.boox.RESET_TRACKING" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Daily exact-alarm → re-arm + kick. -->
+        <receiver
+            android:name=".WakeAlarmReceiver"
+            android:exported="false" />
+
+        <!-- Boot → re-arm the daily alarm. -->
+        <receiver
+            android:name=".BootCompletedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Wi-Fi-available → opportunistic sync (primary wake path, ADR-020 D4). -->
+        <receiver
+            android:name=".ConnectivityReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.intent.action.AIRPLANE_MODE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Bootstrap launcher (see LaunchActivity.kt) — one-shot, no UI.
+             Required the *first* time after `adb install` to clear Android's
+             stopped/notLaunched state; after that, the app self-wakes via
+             Wi-Fi events, the daily alarm, and boot. -->
+        <activity
+            android:name=".LaunchActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:excludeFromRecents="true"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>

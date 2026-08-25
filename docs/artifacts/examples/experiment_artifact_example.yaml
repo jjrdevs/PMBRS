@@ -1,0 +1,66 @@
+artifact_id: "d12be0ef-1fa2-46ff-b3d4-761f6f5e1001"
+artifact_type: "experiment.declaration"
+schema_version: "1.0.0"
+
+authority_level: "authoritative"
+artifact_class: "experiment"
+lifecycle_state: "finalized"
+
+created_at: "2026-05-27T19:10:00Z"
+
+content_hash: "0000000000000000000000000000000000000000000000000000000000000000"
+content_hash_algorithm: "sha256"
+hash_scope_version: "1.0"
+canonical_time_refs:
+  - "2026-05-28T00:00:00Z"
+modality_refs: []
+
+experiment:
+  experiment_name: "No caffeine after 2PM"
+  hypothesis: >
+    Reducing late-day caffeine intake may improve
+    sleep consistency and reduce next-day negative cognitive drift.
+
+  intervention_type: "behavioral_constraint"
+
+  intervention_definition:
+    prohibited_behavior:
+      substance: "caffeine"
+      cutoff_time_local: "14:00"
+
+temporal_scope:
+  start_time: "2026-05-28T00:00:00Z"
+  intended_duration_days: 14
+
+evaluation_targets:
+  primary_targets:
+    - "sleep_consistency_score"
+    - "next_day_sentiment_distribution"
+
+  secondary_targets:
+    - "resting_heart_rate"
+    - "sleep_duration"
+
+comparison_strategy:
+  baseline_window_days: 14
+  experimental_window_days: 14
+
+lineage:
+  derived_from: []
+  observed_from: []
+  aggregated_from: []
+  referenced_by: []
+
+provenance:
+  provenance_type: "declarative"
+  provenance_version: "1.0"
+  provenance_timestamp: "2026-05-27T19:10:00Z"
+  provenance_agent: "local_user:jrhee"
+  declaration_method: "manual_user_declaration"
+  author_display_name: "J. Rhee"
+
+tags:
+  - "experiment"
+  - "intervention"
+  - "sleep"
+  - "caffeine"

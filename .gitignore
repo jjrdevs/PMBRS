@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Android / Mobile build artifacts
+mobile/gradle/
+mobile/build/
+mobile/.gradle/
+mobile/app/build/
+local.properties
+*.apk
+*.aab
+
+# Data / binaries / dex
+*.dex
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs & temp
+*.log
+.pytest_cache/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store

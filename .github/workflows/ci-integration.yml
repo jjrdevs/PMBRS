@@ -1,0 +1,35 @@
+name: CI Integration
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Run unit tests
+        run: |
+          cd mobile
+          ./gradlew :app:testDebugUnitTest --console=plain
+      - name: Run staged sync integration (mock server)
+        run: |
+          cd mobile
+          ./gradlew runStagedSyncIntegration --console=plain
+      - name: Upload battery results (if any)
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-battery-results
+          path: mobile/results/**

@@ -1,0 +1,86 @@
+artifact_id: "4ec7cf55-32e5-4df8-a90d-8a84e8c92001"
+artifact_type: "canonical.window"
+schema_version: "1.0.0"
+
+authority_level: "operational"
+artifact_class: "canonical"
+lifecycle_state: "finalized"
+
+created_at: "2026-05-27T18:43:00Z"
+
+content_hash: "0000000000000000000000000000000000000000000000000000000000000000"
+content_hash_algorithm: "sha256"
+hash_scope_version: "1.0"
+canonical_time_refs:
+  - "2026-05-27T18:41:00Z"
+  - "2026-05-27T18:42:00Z"
+modality_refs:
+  - "wearable_hr"
+  - "wearable_motion"
+  - "browser_activity"
+  - "journal_activity"
+
+window:
+  start_time: "2026-05-27T18:41:00Z"
+  end_time: "2026-05-27T18:42:00Z"
+  resolution_seconds: 60
+  canonical_index: 812341
+
+modalities_present:
+  wearable_hr: true
+  wearable_motion: true
+  browser_activity: true
+  journal_activity: false
+
+missingness_metadata:
+  modality_coverage:
+    wearable_hr: 1.0
+    wearable_motion: 0.95
+    browser_activity: 0.88
+    journal_activity: 0.0
+
+  missing_modalities:
+    - "journal_activity"
+
+  corruption_flags: []
+
+  delayed_modalities: []
+
+quality_metadata:
+  overall_window_quality: 0.91
+  quality_tier: "high"
+
+payload:
+  aligned_artifact_refs:
+    - "0f7f4c9e-7f7e-4d6e-b95a-9ecf1d45d001"
+    - "f42b97dd-24aa-4d2a-a4d1-9abf20f8f100"
+    - "12be4d90-c22f-42f4-b6ef-98bce1112100"
+
+lineage:
+  derived_from: []
+  observed_from: []
+  aggregated_from:
+    - "0f7f4c9e-7f7e-4d6e-b95a-9ecf1d45d001"
+    - "f42b97dd-24aa-4d2a-a4d1-9abf20f8f100"
+    - "12be4d90-c22f-42f4-b6ef-98bce1112100"
+  referenced_by: []
+
+provenance:
+  provenance_type: "pipeline"
+  provenance_version: "1.0"
+  provenance_timestamp: "2026-05-27T18:43:00Z"
+  provenance_agent: "local_system:canonical_window_builder"
+  pipeline_name: "canonical_window_builder"
+  pipeline_version: "0.1.0"
+  execution_environment: "local_pipeline"
+  execution_timestamp: "2026-05-27T18:43:00Z"
+  software_version: "canonical_window_builder_v0.1.0"
+  input_artifact_refs:
+    - "0f7f4c9e-7f7e-4d6e-b95a-9ecf1d45d001"
+    - "f42b97dd-24aa-4d2a-a4d1-9abf20f8f100"
+    - "12be4d90-c22f-42f4-b6ef-98bce1112100"
+
+tags:
+  - "canonical"
+  - "window"
+  - "temporal_alignment"

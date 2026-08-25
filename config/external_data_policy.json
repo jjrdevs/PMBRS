@@ -1,0 +1,20 @@
+{
+  "artifact_root": "/home/jjrdev/.pmbrs-private/store",
+  "state_root": "/home/jjrdev/.pmbrs-private/state",
+  "checkpoint_root": "/home/jjrdev/.pmbrs-private/checkpoints",
+  "hermes_readonly_root": "/home/jjrdev/.pmbrs-private/hermes-readonly",
+  "queue_root": "/home/jjrdev/.pmbrs-private/store/pending",
+  "raw_root": "/home/jjrdev/.pmbrs-private/store/raw",
+  "summary_root": "/home/jjrdev/.pmbrs-private/store/summary",
+  "default_schedule_minutes": 60,
+  "retention_days": 7,
+  "read_only_policy": {
+    "hermes_mode": "read_only",
+    "raw_data_is_authoritative": true,
+    "allow_hermes_write": false,
+    "allow_hermes_touch": false,
+    "notes": "Hermes may read summary snapshots only. Raw artifacts remain under the PMBRS owner path and are never mutated by Hermes."
+  },
+  "scheduler_state_file": "/home/jjrdev/.pmbrs-private/state/scheduler_state.json",
+  "export_snapshot_file": "/home/jjrdev/.pmbrs-private/state/hermes_snapshot.json"
+}

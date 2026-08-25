@@ -1,0 +1,810 @@
+1.PMBRS is a personal behavioral measurement, experimentation, and representation learning platform designed to discover reproducible statistical associations between behaviors, interventions, contexts, and outcomes using multimodal longitudinal data. Its purpose is to support structured self-experimentation, behavioral comparison, and evidence-informed personal interpretation rather than deterministic inference, diagnosis, or automated behavioral prescription.
+
+2.
+PMBRS is explicitly out of scope for clinical diagnosis, deterministic mental-state inference, automatic causal claims, simplistic productivity scoring, automated behavioral prescriptions, commercial product concerns, real-time intervention systems, and exhaustive raw surveillance. Its purpose is limited to discovering statistically supported behavioral associations for personal experimentation and interpretation. PMBRS does not autonomously optimize, manipulate, or intervene in user behavior through closed-loop behavioral control systems.
+
+
+3.
+PMBRS is successful when it generates reproducible and statistically supported insights that meaningfully improve your ability to evaluate and refine behaviors and interventions using personal multimodal data.
+
+System Success
+improves longitudinal behavioral evaluation
+supports useful experimentation
+increases self-observation quality
+produces reproducible comparisons
+Model Success
+stable embeddings
+temporal coherence
+modality robustness
+clustering stability
+
+4.
+PMBRS requires partial interpretability: internal models may be complex, but all conclusions presented to the user must be traceable to observable data, reproducible computations, and statistically supported associations rather than opaque model assertions.
+Interpretability Constraint
+User-facing conclusions must:
+reference observable artifacts,
+identify transformation lineage,
+expose uncertainty where applicable,
+distinguish statistical association from causal inference.
+
+
+5.
+PMBRS should optimize for practically useful, evidence-based insights about personal behavior with scientific rigor and reproducibility as non-negotiable constraints, while being highly automated in data collection and analysis to minimize ongoing operational effort, and maintaining extensibility and privacy as core architectural priorities, with human effort focused on periodic model development, experiment design, and long-term interpretation.
+PMBRS is batch-analysis-first, not real-time-first.
+This has enormous downstream implications:
+compute orchestration,
+caching,
+synchronization,
+feature extraction,
+privacy,
+mobile architecture,
+storage.
+
+6.
+PMBRS uses a globally aligned fixed 60-second window grid as the canonical temporal reference system for all modalities. All sensor streams, sparse events, semantic artifacts, and derived representations are deterministically projected onto this shared timeline using modality-specific alignment rules. Higher-resolution, lower-resolution, event-driven, and multi-scale analyses are treated as derived views over the canonical timeline rather than independent temporal systems. This constraint exists to preserve cross-modality coherence, reproducibility, lineage consistency, and stable artifact interoperability across the platform.
+
+7.
+PMBRS adopts a raw-preserving artifact architecture in which behaviorally meaningful raw events and streams are retained whenever feasible to minimize irreversible information loss and support future reprocessing, retraining, and representation-learning experimentation. Canonical windows provide the aligned operational backbone for downstream modeling, while derived artifacts such as features, embeddings, clusters, and evaluations remain reproducible rather than authoritative. Exhaustive surveillance artifacts (e.g., screenshots, raw audio, full page contents) are excluded by default unless explicitly required for future research objectives.
+
+8.
+PMBRS modalities are structured time-indexed information sources that can be deterministically aligned to the canonical temporal system through modality-specific transformation rules. Modalities are not treated as semantically equivalent and are instead categorized by epistemological role, including observational, declarative, subjective, and inferred modalities. All modalities must conform to shared structural alignment contracts while preserving lineage, uncertainty, and modality-specific semantics. Core behavioral representations prioritize observational modalities, while subjective and inferred modalities remain partially separated to prevent semantic leakage and preserve interpretability.
+
+9.
+PMBRS uses a multi-layer authority model that distinguishes between observational evidence, canonical operational structure, and derived analytical interpretation. Authoritative artifacts consist only of directly observed, user-declared, or user-authored records, including raw behavioral events, wearable and telemetry streams, journal text, intervention declarations, calendar/context artifacts, timestamps, and canonical aligned windows. These artifacts represent irreducible historical evidence and form the permanent source-of-truth layer for the system.
+Canonical windows serve as the operational temporal backbone of PMBRS by providing the globally aligned reference structure through which all modalities are synchronized and compared. While derived from upstream observational artifacts, canonical windows are treated as stable operational infrastructure rather than interpretive outputs.
+All downstream analytical products—including features, embeddings, behavioral regimes, inferred events, evaluations, semantic summaries, sentiment analysis, and LLM-generated interpretations—are treated as non-authoritative derived artifacts. These outputs are model-dependent, reproducible, versioned, replaceable, and fully lineage-traceable to upstream authoritative artifacts. Derived outputs must never overwrite or recursively redefine historical source data.
+Inferred behavioral events and semantic interpretations are treated as probabilistic hypotheses rather than ground truth. They may support experimentation, comparison, and interpretation, but must preserve uncertainty, confidence estimates, and transformation lineage.
+This authority structure exists to preserve reproducibility, prevent recursive semantic contamination, support future retraining and reinterpretation, maintain clear epistemological boundaries between observation and interpretation, and ensure that PMBRS remains grounded in observable behavioral evidence rather than opaque model assertions.
+10.
+All canonical temporal windows exist structurally regardless of modality completeness, but windows carry explicit metadata describing modality coverage, signal quality, uncertainty, and missingness semantics. Window validity is therefore treated as a confidence-bearing analytical property rather than a binary existence condition. Downstream systems determine analytical suitability based on modality-specific completeness and quality thresholds appropriate to the task being performed. Dense observational modalities primarily determine behavioral reliability, while sparse semantic modalities act as contextual overlays rather than hard validity requirements.
+
+11.
+PMBRS adopts an artifact-oriented, immutable-first, lineage-centric architecture in which all subsystems communicate exclusively through formally defined artifacts rather than implicit internal state or direct subsystem coupling. Artifacts constitute the fundamental operational objects of the platform and serve as the backbone for reproducibility, experimentation, interoperability, and long-term behavioral analysis.
+Artifact Definition
+An artifact is any structured object produced, consumed, stored, transformed, or referenced within PMBRS. Artifacts are first-class system entities rather than unstructured data blobs and are governed through explicit schema contracts, lineage relationships, and metadata requirements.
+Each artifact contains:
+Artifact type identifier
+Globally unique identity
+Creation metadata
+Lineage references
+Schema version information
+Configuration and execution references
+Modality references where applicable
+Provenance metadata describing inputs, creators, parameters, and execution environment
+Artifact identity defines semantic equivalence independently from physical storage location.
+
+Artifact Type vs Artifact Axes
+PMBRS distinguishes between concrete artifact types and orthogonal artifact property axes.
+Artifact Types
+Artifact types define concrete schema identities and operational roles within the system.
+Examples include:
+wearable_event
+browser_event
+journal_chunk
+canonical_window
+feature_vector
+behavioral_embedding
+clustering_result
+inferred_behavioral_event
+experiment_definition
+evaluation_report
+Artifact Axes
+Artifact axes define cross-cutting semantic properties independent of artifact type.
+Artifacts may be categorized along axes including:
+observational / derived / interpreted
+authoritative / probabilistic
+immutable / mutable
+permanent / transient
+deterministic / non-deterministic
+reproducible / non-reproducible
+This axis-based model avoids rigid ontology coupling and permits future extensibility without requiring new artifact inheritance hierarchies.
+
+Artifact Classes by Epistemic Role
+Observational Artifacts
+Observational artifacts represent directly observed or user-authored evidence.
+Examples:
+wearable telemetry
+browser telemetry
+application activity
+journal entries
+calendar records
+intervention declarations
+Characteristics:
+authoritative
+immutable
+append-only
+lineage roots
+These artifacts represent irreducible historical evidence.
+
+Canonical Structural Artifacts
+Canonical structural artifacts provide globally shared operational infrastructure.
+Examples:
+canonical temporal windows
+modality alignment mappings
+missingness masks
+modality coverage descriptors
+Canonical windows serve as the operational temporal backbone of PMBRS and are treated as globally stable coordination infrastructure rather than ordinary analytical outputs.
+Characteristics:
+operationally authoritative
+immutable
+globally referenced
+reproducible
+
+Derived Analytical Artifacts
+Derived analytical artifacts represent model-dependent computational outputs.
+Examples:
+feature vectors
+embeddings
+regime assignments
+similarity matrices
+inferred behavioral events
+drift analyses
+Characteristics:
+lineage-dependent
+reproducible
+versioned
+replaceable
+non-authoritative
+These artifacts are analytical interpretations rather than historical truth.
+
+Semantic and Interpretive Artifacts
+Semantic artifacts provide human-readable interpretation layers over derived structure.
+Examples:
+LLM summaries
+semantic labels
+sentiment analysis
+behavioral explanations
+regime annotations
+Characteristics:
+probabilistic
+highly version-sensitive
+non-authoritative
+partially non-deterministic
+Interpretive artifacts must never overwrite or recursively redefine upstream observational evidence.
+
+Experimental Artifacts
+Experimental artifacts support structured self-experimentation and longitudinal comparison.
+Examples:
+intervention definitions
+experiment declarations
+comparison cohorts
+evaluation outputs
+annotations
+Characteristics:
+lineage-linked
+temporally scoped
+partially authoritative
+reproducibility-sensitive
+
+Artifact Identity Model
+PMBRS uses a hybrid identity strategy.
+Stable Content Hashes
+Used for reproducible artifacts where semantic equivalence matters.
+Purpose:
+deduplication
+reproducibility verification
+lineage integrity
+deterministic referenceability
+UUID-Based Operational IDs
+Used for operational instances, transient processes, caches, and execution objects.
+Purpose:
+operational simplicity
+distributed coordination
+runtime uniqueness
+Identity is logically separate from storage implementation.
+
+Artifact Lineage Model
+Artifacts form a directed acyclic graph (DAG) representing computational and observational provenance.
+Supported lineage edge types include:
+derived-from
+observed-from
+aggregated-from
+referenced-by
+Every derived artifact must be capable of identifying:
+upstream inputs
+producing subsystem
+execution timestamp
+configuration snapshot
+model version
+dependency versions
+code revision/environment snapshot
+Lineage tracking is mandatory for all derived and interpretive artifacts.
+
+Immutability Model
+PMBRS adopts a hybrid immutability architecture.
+Immutable Artifacts
+Immutable artifacts include:
+raw observational evidence
+journal entries
+experiment declarations
+canonical windows
+derived analytical outputs
+Immutable artifacts are never modified in place. Supersession creates new artifacts rather than mutating historical records.
+Mutable Artifacts
+Mutable operational artifacts include:
+caches
+indexes
+temporary processing state
+UI convenience metadata
+orchestration state
+Retention, archival, recomputation, and compaction policies must be explicitly defined for immutable artifact categories.
+
+Artifact Granularity
+Artifacts are designed to align with the smallest unit of meaningful observation or computation.
+Examples:
+event-level observational artifacts
+window-level temporal artifacts
+chunk-level journal artifacts
+experiment-scoped analytical artifacts
+Fine-grained artifacts preserve recomputation flexibility, precise lineage tracking, and experimentation modularity.
+
+Artifact Contracts and Schema Governance
+All artifacts must conform to explicit schema contracts.
+Contracts define:
+required fields
+data types
+structural constraints
+validation rules
+compatibility guarantees
+schema evolution policies
+Schema versioning and backward-compatible migration strategies are mandatory to preserve long-term reproducibility and interoperability across subsystems.
+
+Metadata Requirements
+All artifacts must minimally include:
+unique artifact identifier
+artifact type
+creation timestamp
+lineage references
+schema version
+configuration references
+modality references
+execution provenance
+environment snapshot references
+Self-describing artifacts maximize reproducibility, debugging capability, portability, and future reprocessing flexibility.
+
+Artifact Ownership
+Each subsystem maintains exclusive creation authority over its artifact domain.
+Examples:
+ingestion systems own observational artifacts
+temporal systems own canonical windows
+feature systems own feature artifacts
+representation-learning systems own embeddings
+experimentation systems own experiment artifacts
+Ownership boundaries prevent conflicting artifact generation and preserve architectural consistency.
+
+Artifact Lifecycle States
+Artifacts may progress through lifecycle states including:
+proposed
+validated
+finalized
+deprecated
+superseded
+archived
+failed
+Lifecycle states are operational metadata and do not imply mutability of immutable artifacts.
+
+Architectural Constraint
+PMBRS is fundamentally an artifact-oriented behavioral computing platform. All analytical, experimental, interpretive, and modeling systems operate through immutable, lineage-traceable artifacts connected through explicit dependency relationships. This structure exists to preserve reproducibility, enable future retraining and reinterpretation, prevent hidden subsystem coupling, support experimentation at scale, and ensure that all conclusions remain grounded in observable behavioral evidence rather than opaque model assertions.
+12.
+PMBRS adopts a lineage-centric reproducibility architecture in which all derived artifacts preserve explicit transformation provenance, version references, execution metadata, and dependency relationships. Lineage is represented as a directed acyclic dependency graph connecting observational artifacts, canonical structural artifacts, analytical outputs, and interpretive layers.
+The system distinguishes between:
+schema versioning,
+transformation versioning,
+model versioning,
+and experiment versioning.
+Derived artifacts are immutable and superseded rather than overwritten. All analytical outputs remain historically reconstructable through lineage references, configuration snapshots, model identifiers, and execution provenance.
+PMBRS prioritizes computational reproducibility for analytical artifacts while treating LLM-generated semantic interpretations as traceable but potentially non-deterministic interpretive overlays.
+The system preserves immutable analytical history to support long-term experimentation, reinterpretation, model comparison, and reproducible behavioral analysis across evolving system versions.
+
+13.
+Experimentation System Formalization
+PMBRS adopts a structured temporal intervention framework in which experiments are treated as first-class, lineage-traceable behavioral artifacts rather than informal annotations or automated causal claims. The experimentation subsystem exists to support longitudinal behavioral refinement, structured self-experimentation, and evidence-informed comparison of interventions, contexts, and behavioral patterns using multimodal temporal data.
+The experimentation framework is designed to preserve scientific humility, reproducibility, interpretability, and low operational friction while avoiding deterministic behavioral prescription, uncontrolled narrative generation, or unsupported causal inference.
+
+Experiment Definition
+An experiment is a temporally scoped declaration that one or more intentionally introduced variables may influence downstream behavioral structure, subjective experience, or evaluative metrics.
+Experiments are declarative rather than inferred. Authoritative experiments originate from explicit user declarations rather than automated system assumptions. The system may later generate inferred behavioral shifts or contextual hypotheses, but inferred patterns are treated as probabilistic analytical artifacts rather than authoritative experiments.
+Experiments function as temporally aligned contextual structures that condition interpretation, evaluation, and longitudinal comparison throughout PMBRS.
+
+Experiment Temporal Structure
+Experiments are represented as temporally scoped artifacts aligned to the canonical global temporal window system.
+Each experiment may contain:
+declared start timestamp
+optional expected duration
+optional explicit end timestamp
+active/inactive lifecycle state
+contextual scope definitions
+modality scope definitions
+Experiments may exist across multiple temporal scales simultaneously, including:
+session-level interventions
+daily interventions
+multi-week interventions
+persistent lifestyle interventions
+All experimental analysis remains aligned to canonical temporal windows rather than independent experimental timelines.
+
+Experiment Ontology and Metadata
+PMBRS uses a semi-structured intervention ontology that combines freeform human declarations with optional structured metadata.
+Experiment artifacts may contain:
+intervention identifier
+title
+freeform description
+declared goals
+optional behavioral targets
+optional categorical tags
+temporal scope
+contextual scope
+modality scope
+confidence or consistency notes
+Examples of structured categories include:
+sleep
+exercise
+caffeine
+digital environment
+work structure
+stimulation exposure
+recovery
+social interaction
+Behavioral targets represent hypotheses rather than guaranteed outcomes.
+
+Experiment Scope Semantics
+Experiments may define:
+temporal scope
+contextual scope
+modality scope
+Examples:
+mornings only
+workdays only
+during study sessions
+sleep-related periods only
+Scope semantics allow interventions to affect only relevant portions of behavioral space rather than uniformly conditioning all downstream analysis.
+Experiments may overlap temporally and contextually. PMBRS explicitly supports concurrent interventions and does not assume behavioral isolation between experiments.
+
+Explicit vs Inferred Interventions
+PMBRS distinguishes between:
+explicit user-declared interventions
+inferred behavioral shifts
+Explicit Interventions
+Explicit interventions are authoritative experimental declarations originating from the user.
+Examples:
+reducing caffeine intake
+earlier sleep schedule
+low-stimulation mornings
+pomodoro work structure
+Inferred Behavioral Shifts
+Inferred shifts are derived analytical artifacts generated from observed behavioral changes.
+Examples:
+increased walking behavior
+reduced phone usage
+changes in fragmentation patterns
+Inferred shifts are probabilistic and non-authoritative. They may support interpretation and exploratory analysis but must never overwrite or redefine explicit experimental declarations.
+
+Compliance and Intervention Intensity
+PMBRS models interventions as continuous behavioral expressions rather than strictly binary active/inactive states.
+Experiments may include:
+adherence estimates
+intervention intensity estimates
+confidence-adjusted compliance metrics
+modality-derived compliance indicators
+Examples:
+bedtime regularity during a sleep intervention
+caffeine consumption consistency
+sustained reduction in context switching
+Compliance estimation may initially rely on manual confirmation and later incorporate progressively automated behavioral estimation systems.
+Compliance artifacts remain probabilistic derived outputs rather than authoritative ground truth.
+
+Outcome Philosophy
+PMBRS evaluates experiments through comparative behavioral structure rather than deterministic success/failure judgments.
+Outcomes may include:
+behavioral shifts
+regime distribution changes
+transition probability changes
+temporal stability changes
+embedding-space trajectory changes
+subjective semantic shifts
+observational metric trends
+The system does not produce definitive claims such as:
+“the intervention succeeded”
+“the intervention failed”
+“the intervention caused improvement”
+Instead, PMBRS produces:
+statistical associations
+comparative summaries
+uncertainty estimates
+confidence-bearing evaluative artifacts
+Interpretation remains human-centered.
+
+Confound Philosophy
+PMBRS assumes real-world behavioral data contains overlapping interventions, environmental variability, and uncontrolled confounding factors.
+The experimentation subsystem therefore prioritizes:
+association analysis
+contextual comparison
+temporal co-occurrence analysis
+conditioned evaluation
+PMBRS explicitly avoids strong autonomous causal inference.
+System-generated language must distinguish between:
+association
+correlation
+temporal alignment
+co-occurrence
+and:
+causation
+deterministic behavioral explanation
+Confounding awareness is treated as a constitutional architectural constraint.
+
+Evaluation Comparison Philosophy
+Experiment evaluation is context-aware rather than naively before-vs-after.
+Future evaluative approaches may include:
+baseline-normalized comparison
+temporal matching
+regime-conditioned comparison
+weekday-normalized comparison
+rolling historical comparison
+modality-conditioned comparison
+The experimentation framework is architecturally designed to support future advanced comparison methodologies without altering core temporal or artifact contracts.
+
+Experiment Artifact Structure
+Experiments are represented through explicit artifact hierarchies.
+Example lineage structure:
+Experiment declaration
+↓
+Intervention scopes
+↓
+Compliance estimates
+↓
+Evaluation artifacts
+↓
+Comparative analyses
+↓
+Interpretive summaries
+All experimental artifacts are lineage-traceable and version-aware.
+Derived evaluative outputs remain:
+reproducible
+non-authoritative
+model-dependent
+supersedable rather than mutable
+
+Automation Philosophy
+PMBRS is designed for progressive automation while preserving human oversight and interpretive control.
+Early experimentation workflows may include:
+manual declarations
+manual annotations
+explicit user review
+Later workflows may incorporate:
+compliance estimation
+inferred contextual shifts
+automatic comparison generation
+anomaly highlighting
+longitudinal pattern surfacing
+Automation exists to assist experimentation rather than autonomously manipulate or optimize behavior.
+PMBRS explicitly excludes closed-loop behavioral control systems.
+
+Architectural Constraint
+The experimentation subsystem is one of the core value-generating systems within PMBRS. Experiments function as conditioning structures over behavioral space that influence comparison, interpretation, evaluation, and longitudinal analysis across multimodal temporal representations.
+The experimentation architecture exists to support:
+reproducible behavioral refinement
+structured self-experimentation
+longitudinal comparison
+evidence-informed interpretation
+uncertainty-aware behavioral analysis
+while preserving:
+reproducibility
+interpretability
+lineage integrity
+scientific humility
+low-friction long-term operation
+and clear separation between observation, inference, and interpretation.
+14.
+Evaluation Operationalization
+PMBRS treats evaluation as a first-class, lineage-traceable subsystem responsible for validating system integrity, representation quality, experimental usefulness, longitudinal stability, and interpretive reliability across the platform. Evaluation is not treated as auxiliary model monitoring or isolated performance metrics, but as a reproducible analytical framework embedded directly into the architecture of the system.
+The purpose of evaluation within PMBRS is to ensure that behavioral representations, derived analyses, and experimental conclusions remain statistically meaningful, structurally stable, reproducible, uncertainty-aware, and behaviorally useful without overclaiming semantic or causal truth.
+
+Evaluation Philosophy
+PMBRS evaluates whether the system produces stable, reproducible, behaviorally informative structure that supports useful longitudinal experimentation and interpretation rather than whether it infers psychological ground truth.
+Because PMBRS operates without authoritative behavioral labels or deterministic cognitive-state targets, evaluation primarily relies on:
+structural consistency,
+temporal coherence,
+comparative usefulness,
+robustness,
+reproducibility,
+intervention sensitivity,
+and longitudinal stability.
+Evaluation therefore emphasizes proxy validation and behavioral utility rather than classical supervised accuracy metrics.
+
+Evaluation Categories
+PMBRS organizes evaluation into multiple complementary evaluation classes.
+System Integrity Evaluation
+System integrity evaluation validates operational reliability and ingestion correctness across the platform.
+Examples include:
+ingestion reliability
+synchronization correctness
+temporal alignment integrity
+modality coverage tracking
+missingness monitoring
+signal quality evaluation
+corruption detection
+device uptime and consistency
+These evaluations ensure that downstream analyses are grounded in valid observational structure.
+
+Representation Quality Evaluation
+Representation evaluation assesses the structural quality and behavioral usefulness of learned representations.
+Examples include:
+embedding temporal coherence
+transition smoothness
+embedding variance stability
+representation collapse detection
+clustering stability
+modality ablation sensitivity
+robustness to missingness
+latent continuity analysis
+regime persistence evaluation
+drift sensitivity analysis
+These evaluations determine whether learned representations preserve meaningful behavioral structure without collapsing into trivial sensor correlations or unstable latent spaces.
+
+Experimentation Evaluation
+Experiment evaluation assesses whether declared interventions are associated with statistically meaningful behavioral differences relative to historical or contextual baselines.
+Examples include:
+distributional shifts
+regime frequency changes
+transition probability changes
+embedding trajectory changes
+modality-conditioned comparisons
+baseline-normalized comparisons
+longitudinal comparison stability
+uncertainty-aware intervention comparisons
+Experiment evaluation remains associational rather than causal.
+PMBRS does not autonomously conclude that interventions “worked,” “failed,” or caused behavioral changes. Instead, the system generates confidence-bearing comparative artifacts that support human interpretation.
+
+Human Utility Evaluation
+PMBRS recognizes human interpretive usefulness as a core evaluation category.
+Human utility evaluation assesses whether system outputs:
+improve self-observation quality,
+support meaningful experimentation,
+reduce interpretive ambiguity,
+generate reproducible insight,
+and remain understandable and behaviorally actionable.
+Human utility is treated as an architectural success criterion rather than a secondary UX concern.
+
+Evaluation Artifact Model
+Evaluations are represented as first-class derived artifacts within the PMBRS artifact system.
+Evaluation artifacts contain:
+evaluated target references
+dataset scope references
+modality scope references
+metric outputs
+comparison baselines
+configuration snapshots
+execution provenance
+timestamps
+schema versions
+uncertainty estimates
+lineage references
+Evaluation artifacts are:
+reproducible,
+versioned,
+lineage-traceable,
+and model-dependent.
+Evaluations never overwrite historical artifacts and remain independently reproducible from authoritative upstream evidence.
+
+Longitudinal Evaluation Philosophy
+PMBRS treats evaluation as a continuous temporal process rather than a one-time model validation step.
+Longitudinal evaluation may track:
+embedding drift over time
+modality degradation
+clustering instability
+changing intervention sensitivity
+temporal robustness changes
+behavioral baseline evolution
+feature quality degradation
+ingestion reliability trends
+This allows PMBRS to evaluate not only individual models, but the long-term stability and interpretability of the behavioral measurement ecosystem itself.
+
+Relative vs Absolute Evaluation
+PMBRS distinguishes between:
+absolute evaluation metrics,
+and relative longitudinal comparison.
+Absolute Evaluation
+Examples:
+reconstruction loss
+predictive accuracy
+embedding compactness
+clustering metrics
+These metrics are useful but insufficient in isolation.
+Relative Evaluation
+Relative evaluation compares system behavior across versions, configurations, and temporal periods.
+Examples:
+improved temporal coherence
+improved intervention separability
+reduced instability
+increased robustness to missingness
+improved clustering persistence
+improved modality integration quality
+Relative evaluation is prioritized because PMBRS is fundamentally an evolving personal experimentation platform rather than a static benchmark model.
+
+Proxy Evaluation Philosophy
+PMBRS explicitly recognizes the absence of authoritative behavioral ground truth.
+As a result, many evaluations rely on proxy structural indicators rather than deterministic correctness.
+Examples include:
+temporal continuity
+contextual consistency
+intervention sensitivity
+robustness under perturbation
+modality ablation performance
+reconstruction consistency
+regime persistence
+transition smoothness
+Proxy evaluation is treated as a structural validation methodology rather than evidence of psychological truth.
+
+Uncertainty and Interpretability Constraints
+All evaluative outputs must preserve uncertainty and avoid semantic overreach.
+Evaluation outputs must:
+expose uncertainty where applicable,
+distinguish observation from interpretation,
+distinguish association from causation,
+preserve lineage traceability,
+avoid deterministic behavioral claims,
+and avoid unsupported semantic labeling.
+Interpretive summaries, LLM-generated explanations, and visualizations must remain grounded in observable evidence and evaluative structure.
+
+Evaluation Lineage Requirements
+Every evaluation artifact must be capable of answering:
+what was evaluated,
+against which baseline,
+using which modalities,
+using which configuration,
+using which model version,
+across which temporal scope,
+and from which upstream artifacts.
+Evaluation lineage is treated as a core reproducibility requirement.
+
+Evaluation Scheduling Philosophy
+Because PMBRS is batch-analysis-first rather than real-time-first, evaluations are expected to occur through scheduled analytical cycles.
+Examples include:
+nightly integrity evaluation
+weekly representation evaluation
+monthly drift analysis
+post-intervention evaluation
+periodic modality robustness analysis
+Evaluation scheduling remains configurable and extensible.
+
+Failure Detection Philosophy
+PMBRS includes explicit evaluation mechanisms for detecting structural or analytical failure states.
+Examples include:
+embedding collapse
+excessive missingness
+synchronization failure
+modality degradation
+unstable clustering
+abnormal drift
+corrupted ingestion
+anomalous evaluation divergence
+Failure detection exists to prevent invalid downstream interpretation and silent contamination of behavioral analyses.
+
+Evaluation Hierarchy
+Evaluation operates across multiple architectural levels simultaneously:
+artifact-level evaluation
+modality-level evaluation
+feature-level evaluation
+model-level evaluation
+experiment-level evaluation
+longitudinal system-level evaluation
+This hierarchical structure allows PMBRS to isolate failure modes, compare subsystem quality, and preserve architectural interpretability.
+
+Architectural Constraint
+Evaluation within PMBRS exists to ensure that the system remains:
+reproducible,
+uncertainty-aware,
+structurally stable,
+behaviorally useful,
+scientifically grounded,
+and resistant to semantic overreach.
+PMBRS explicitly rejects evaluation frameworks that optimize solely for predictive performance while sacrificing interpretability, lineage integrity, behavioral usefulness, or epistemological clarity.
+Evaluation is therefore treated as a permanent operational layer of the system rather than a temporary model-development utility.
+
+15.
+PMBRS is fundamentally a behavioral representation and experimentation infrastructure rather than a productivity platform, autonomous agent system, generalized life operating system, or AI assistant. Its core responsibility is to maintain a governed, reproducible, temporally aligned behavioral data environment capable of supporting longitudinal analysis, representation learning, experimentation, and evidence-informed interpretation over multimodal personal behavioral data.
+The PMBRS core owns the canonical behavioral infrastructure of the system, including:
+canonical temporal alignment and window generation,
+artifact governance and schema enforcement,
+lineage tracking and reproducibility infrastructure,
+modality abstraction contracts,
+ingestion contract definitions,
+feature extraction orchestration,
+representation-learning interfaces,
+experimentation infrastructure,
+evaluation infrastructure,
+uncertainty propagation,
+derived artifact management,
+and behavioral analysis coordination.
+PMBRS core is responsible for preserving architectural consistency, temporal coherence, lineage integrity, and reproducibility guarantees across all subsystems.
+PMBRS does not treat visualization layers, dashboards, notifications, mobile interfaces, notebooks, reports, or interactive applications as part of the constitutional core architecture. These systems are downstream consumers of PMBRS artifacts, APIs, evaluations, and derived outputs. User-facing interfaces may support anomaly review, experiment interaction, activity confirmation, longitudinal visualization, and interpretive exploration, but they remain operational applications built on top of the governed artifact system rather than defining the system itself.
+External services, providers, and platform-specific integrations remain architecturally replaceable. PMBRS defines canonical ingestion contracts and transformation requirements while allowing ingestion adapters and synchronization implementations to remain modular and independently replaceable. This includes, but is not limited to:
+wearable APIs,
+browser telemetry systems,
+desktop activity loggers,
+OCR pipelines,
+calendar providers,
+music/media providers,
+LLM providers,
+cloud synchronization systems,
+and notification systems.
+Even when these integrations are implemented directly within the broader PMBRS ecosystem, they are architecturally treated as replaceable adapters rather than permanent core dependencies.
+PMBRS is highly automated in ingestion, alignment, aggregation, evaluation, summarization, anomaly surfacing, and derived analysis generation in order to minimize operational burden and support long-term longitudinal collection. However, PMBRS explicitly rejects autonomous closed-loop behavioral optimization systems. The platform does not autonomously manipulate, optimize, or control user behavior. Future recommendation or goal-support systems may provide interpretable suggestions, behavioral comparisons, or intervention hypotheses, but user intent and human interpretation remain authoritative.
+Large language models and semantic systems are treated as non-authoritative interpretive layers. LLM systems may perform:
+summarization,
+semantic labeling,
+comparative explanation,
+hypothesis generation,
+contextual interpretation,
+and experiment-oriented narrative assistance.
+However, LLM-generated outputs are always treated as probabilistic derived artifacts rather than canonical truth. LLM systems are explicitly prohibited from:
+redefining authoritative historical artifacts,
+overriding observational evidence,
+creating canonical structure,
+inferring deterministic psychological states,
+or asserting causal truth beyond available evidence.
+All semantic interpretations must remain uncertainty-bearing, lineage-traceable, and distinguishable from observational artifacts and reproducible analytical outputs.
+PMBRS owns model lineage, datasets, evaluation artifacts, experiment history, transformation provenance, and reproducibility infrastructure, but does not attempt to become a large-scale production ML orchestration platform. Distributed infrastructure, production serving systems, and enterprise-scale MLOps concerns remain outside the intended scope of the architecture.
+PMBRS adopts a replaceable subsystem philosophy. Embedding models, clustering systems, feature extraction pipelines, LLM providers, evaluation methods, storage backends, visualization layers, and ingestion adapters are intentionally designed to remain modular and replaceable so long as they preserve canonical artifact contracts, temporal semantics, lineage requirements, and reproducibility guarantees.
+The long-term persistent identity of PMBRS resides in:
+authoritative behavioral artifacts,
+canonical temporal semantics,
+lineage DAGs,
+experiment history,
+evaluation artifacts,
+and artifact contracts/schemas,
+rather than in any specific model architecture, storage engine, analytical pipeline, or interface implementation. Models, adapters, feature systems, and interpretive layers are expected to evolve and be replaceable over time while preserving the governed behavioral history and reproducible transformation structure of the system.
+16.
+PMBRS adopts a local-first privacy architecture in which authoritative behavioral artifacts, derived analytical artifacts, and longitudinal historical records are stored locally by default under direct user control. The system is designed primarily as a personal behavioral experimentation and representation-learning platform rather than a networked or cloud-native service architecture.
+The default operational assumption of PMBRS is that all sensitive behavioral data remains on-device unless explicitly exported, synchronized, or shared by the user. Cloud synchronization, remote storage, distributed processing, and third-party persistence are considered optional future extensions rather than foundational architectural assumptions.
+PMBRS intentionally minimizes raw surveillance collection and prioritizes structured behavioral representations, aggregated temporal features, semantic abstractions, and reproducible derived artifacts over exhaustive raw capture. High-risk surveillance modalities—including continuous screenshots, full page contents, raw audio archives, keystroke logging, and unrestricted message capture—are excluded by default unless explicitly enabled for narrowly scoped future research purposes.
+Sensitive modalities within PMBRS include, but are not limited to:
+journal text,
+search behavior,
+browser telemetry,
+LLM interaction artifacts,
+wearable physiological streams,
+intervention history,
+calendar/context metadata,
+and derived semantic interpretations.
+These modalities are treated as highly sensitive personal behavioral records and must preserve strict lineage separation between authoritative evidence and probabilistic interpretation.
+PMBRS distinguishes between authoritative artifacts and external provider visibility. External systems—including wearable vendors, browser platforms, OCR systems, LLM providers, media services, and synchronization infrastructure—are treated as untrusted or partially trusted integration boundaries. PMBRS therefore attempts to minimize unnecessary provider exposure by preferring local preprocessing, local storage, derived representations, and selective semantic extraction whenever feasible.
+Frontend interfaces, dashboards, visualizations, notifications, and mobile integrations are treated as downstream applications with restricted artifact visibility rather than unrestricted access layers. Operational interfaces should expose only the minimum required information necessary for interpretation, experimentation, anomaly review, or user interaction.
+PMBRS is not designed as a multi-user collaborative platform and therefore does not currently prioritize enterprise-grade authentication, role-based access control, organizational tenancy, or internet-facing service architecture. The system instead assumes a personal single-user trust model centered around local ownership and direct physical device control.
+Deletion semantics preserve the distinction between authoritative historical evidence and reproducible derived artifacts. Derived artifacts, caches, indexes, embeddings, summaries, evaluations, and transient analytical outputs may be safely regenerated or discarded without affecting authoritative historical evidence. Authoritative artifacts may be deleted only through explicit user-directed operations, with lineage-aware invalidation of dependent downstream artifacts where applicable.
+Security philosophy within PMBRS prioritizes:
+local ownership,
+minimal provider exposure,
+deterministic reproducibility,
+controlled interpretive boundaries,
+explicit lineage tracking,
+and preservation of epistemological integrity between observation and inference.
+The system intentionally avoids opaque cloud-centric behavioral analytics architectures, autonomous behavioral surveillance systems, and externally controlled optimization pipelines in favor of transparent, user-governed, locally controlled behavioral experimentation infrastructure.
+17.
+PMBRS adopts a lineage-preserving, schema-versioned artifact architecture designed to support long-term reproducibility, safe system evolution, historical integrity, and future reinterpretation of behavioral data and analytical outputs.
+All artifacts within PMBRS are required to embed explicit schema version metadata identifying the structural assumptions, field definitions, transformation semantics, and compatibility expectations under which the artifact was produced. Schema versioning is treated as a mandatory constitutional requirement rather than an implementation convenience.
+PMBRS distinguishes between authoritative historical artifacts and reproducible derived artifacts during schema evolution. Authoritative artifacts—including raw observational events, journal entries, intervention declarations, timestamps, canonical temporal windows, and user-authored records—are treated as immutable historical evidence and are never rewritten retroactively during schema migrations except under explicit user-directed corrective operations.
+Derived analytical artifacts—including features, embeddings, clustering outputs, semantic summaries, evaluations, inferred events, and interpretive outputs—are treated as reproducible products of upstream artifacts, transformation logic, configuration state, and model versions. These artifacts may be regenerated under updated schemas, models, or analytical pipelines while preserving lineage continuity and historical traceability.
+PMBRS therefore adopts a regeneration-over-rewrite evolution philosophy. When schemas evolve:
+authoritative artifacts persist unchanged,
+lineage continuity is preserved,
+derived artifacts may be recomputed under updated schemas,
+historical artifacts remain interpretable under their original schema definitions,
+and old analytical outputs remain queryable and reproducible where feasible.
+Backward compatibility requirements are concentrated primarily within the constitutional layers of the system, including:
+canonical temporal semantics,
+artifact identity rules,
+lineage semantics,
+modality contracts,
+authoritative artifact definitions,
+schema version metadata,
+and canonical window alignment behavior.
+Higher-level analytical systems—including embeddings, clustering systems, feature pipelines, evaluation methods, interpretive layers, visualization systems, and semantic abstractions—are intentionally treated as replaceable and evolution-friendly subsystems.
+Deprecated analytical systems, feature pipelines, embedding architectures, clustering methods, and interpretive layers are not treated as invalid historical states. Instead, deprecated systems remain lineage-traceable, historically reproducible where feasible, and queryable for longitudinal comparison and experiment continuity, even after they stop producing new outputs.
+Schema evolution within PMBRS prioritizes:
+preservation of historical integrity,
+reproducibility of prior analyses,
+deterministic lineage continuity,
+controlled migration semantics,
+safe subsystem replacement,
+and long-term behavioral archive stability.
+This governance philosophy exists to ensure that PMBRS remains sustainable as a multi-year behavioral experimentation and representation-learning platform without sacrificing interpretability, reproducibility, or historical coherence as schemas, models, analytical methods, and subsystem implementations evolve over time.

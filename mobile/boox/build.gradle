@@ -1,0 +1,62 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+// ---------------------------------------------------------------------------
+// Private build secrets: read from <repo>/mobile/private/boox.properties
+// (gitignored) so the booxCloudToken / booxLanToken don't land in .git.
+//
+// Fallbacks (for CI or anyone without the private file — the APK will just
+// refuse to ship because the service aborts on a token that starts with
+// "CHANGE-" at runtime).
+// ---------------------------------------------------------------------------
+def booxProps = new Properties()
+def booxPropsFile = rootProject.file('private/boox.properties')
+if (booxPropsFile.exists()) {
+    booxPropsFile.withInputStream { booxProps.load(it) }
+}
+
+android {
+    namespace 'com.pmbrs.boox'
+    compileSdk 36
+    buildFeatures { buildConfig = true }
+
+    defaultConfig {
+        applicationId 'com.pmbrs.boox'
+        minSdk 24
+        targetSdk 36
+        versionCode 1
+        versionName '0.1.0'
+
+        def cloudUrl   = booxProps['booxCloudUrl']   ?: project.findProperty('booxCloudUrl')   ?: 'https://boox-sync.jjrdev.com'
+        def cloudToken = booxProps['booxCloudToken'] ?: project.findProperty('booxCloudToken') ?: 'CHANGE-CLOUD-TOKEN'
+        def lanUrl     = booxProps['booxLanUrl']     ?: project.findProperty('booxLanUrl')     ?: 'https://mobile-sync.jjrdev.com'
+        def lanToken   = booxProps['booxLanToken']   ?: project.findProperty('booxLanToken')   ?: 'CHANGE-...-LAN'
+
+        buildConfigField 'String', 'BOOX_CLOUD_URL',   "\"" + cloudUrl   + "\""
+        buildConfigField 'String', 'BOOX_CLOUD_TOKEN', "\"" + cloudToken + "\""
+        buildConfigField 'String', 'BOOX_LAN_URL',     "\"" + lanUrl     + "\""
+        buildConfigField 'String', 'BOOX_LAN_TOKEN',   "\"" + lanToken   + "\""
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'androidx.core:core-ktx:1.18.0'
+}

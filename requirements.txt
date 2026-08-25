@@ -1,0 +1,17 @@
+pytest>=7.0
+
+# Phase B — Dashboard prototype (docs/plans/dashboard-milestone-1.md)
+streamlit>=1.35
+duckdb>=0.11
+pandas>=2.1
+altair>=5.3
+
+# Phase D — Representation stub (docs/plans/dashboard-milestone-1.md)
+# torch CPU wheel (avoids CUDA bloat on the 5 GB container):
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+torch>=2.2
+scikit-learn>=1.4
+# mlflow is OPT-IN to the runner (`--mlflow` flag); `--local` never imports it.
+# Self-host single binary (`mlflow server`) is the intended deployment — free,
+# local, reachable via the user's Cloudflare tunnel (per Q2 decision).
+mlflow>=2.11

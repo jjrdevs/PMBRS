@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "browser_visit",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "event_type",
+    "source_app",
+    "visit_id",
+    "canonical_host",
+    "visit_start_ms",
+    "visit_end_ms",
+    "dwell_ms",
+    "provenance",
+    "raw_content_blocked"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "event_type": {"type": "string", "const": "browser_visit"},
+    "source_app": {"type": "string"},
+    "app_id": {"type": "string"},
+    "device_id": {"type": "string"},
+    "visit_id": {"type": "string"},
+    "canonical_host": {"type": "string"},
+    "page_title": {"type": ["string", "null"]},
+    "visit_start_ms": {"type": "integer"},
+    "visit_end_ms": {"type": "integer"},
+    "dwell_ms": {"type": "integer"},
+    "category": {"type": "string"},
+    "input_context": {
+      "type": "object",
+      "properties": {
+        "type": {"type": ["string", "null"]},
+        "focused": {"type": "boolean"},
+        "submitted": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["collected_by", "collection_version", "collection_mode", "recorded_at_ms"],
+      "properties": {
+        "collected_by": {"type": "string"},
+        "collection_version": {"type": "string"},
+        "collection_mode": {"type": "string"},
+        "recorded_at_ms": {"type": "integer"}
+      },
+      "additionalProperties": true
+    },
+    "raw_content_blocked": {"type": "boolean"}
+  },
+  "additionalProperties": true
+}

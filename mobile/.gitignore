@@ -1,0 +1,8 @@
+# PMBRS mobile — secrets & build outputs (never commit)
+local.properties
+private/boox.properties
+build/
+.gradle/
+captures/
+*.iml
+.idea/

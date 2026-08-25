@@ -1,0 +1,5 @@
+# PMBRS mobile build: private endpoints and credentials.
+#   This file is intentionally at `mobile/private/` and read by boox/build.gradle.
+#   Never commit it.
+#
+# Format: Java properties (key=value), one per line.
