@@ -272,6 +272,12 @@ class ArtifactDatabase private constructor(context: Context) : SQLiteOpenHelper(
         @Volatile
         private var INSTANCE: ArtifactDatabase? = null
 
+        /** Reset the singleton (and close the handle) — test-only. */
+        internal fun resetForTests() {
+            INSTANCE?.close()
+            INSTANCE = null
+        }
+
         fun getInstance(context: Context): ArtifactDatabase {
             val dbFile = context.getDatabasePath(DB_NAME)
 

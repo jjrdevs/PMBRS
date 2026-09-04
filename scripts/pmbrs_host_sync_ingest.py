@@ -66,6 +66,9 @@ MAX_BODY_BYTES = 64 * 1024 * 1024  # single page PNG; hard cap, not a quota
 ROUTE_ROLE = {
     "/api/v1/artifacts/sync": "mobile",
     "/api/v1/boox/pages": "boox",
+    # ADR-021 D2: watch biometrics (Samsung Health export files) push.
+    # Reuses the mobile token + tunnel; sibling of the boox route.
+    "/api/v1/wearable/files": "mobile",
 }
 
 
@@ -126,15 +129,31 @@ def _handle_phone_sync(raw_root: Path, body: Any) -> dict[str, Any]:
     if isinstance(body, list):
         batch = body
     elif isinstance(body, dict):
-        batch = body.get("artifacts", [])
+        batch = body.get("artifacts", []) if isinstance(body.get("artifacts"), list) else []
     else:
         batch = []
 
-    written = persist_sync_batch(raw_root, batch)
+    # Coerce to a concrete list (batch may be a generator / arbitrary iterable).
+    batch_list = list(batch) if batch is not None else []
+
+    written = persist_sync_batch(raw_root, batch_list)
+
+    # The phone acks by artifactId (NetworkSyncClient -> SyncResult.Success
+    # -> SyncService.markSyncedByArtifactId). The wearable + boox routes both
+    # return "syncedIds"; the artifact route must too, or Gson nulls the field
+    # and the phone NPEs / can't mark the batch synced (retries forever).
+    synced_ids: list[str] = []
+    for item in batch_list:
+        if isinstance(item, dict):
+            aid = item.get("artifactId") or item.get("id")
+            if aid:
+                synced_ids.append(str(aid))
+
     return {
         "accepted": len(written),
         "message": "OK",
         "storedFiles": [str(path.relative_to(raw_root)) for path in written],
+        "syncedIds": synced_ids,
     }
 
 
@@ -221,6 +240,96 @@ def handle_boox_page(inbox_root: Path, payload: Any) -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
+# wearable route (ADR-021 D2) — watch biometrics export-file upload
+# ---------------------------------------------------------------------------
+
+WEARABLE_INBOX_ROOT = Path("/home/jjrdev/.pmbrs-private/store/inbox/wearable")
+# Export subpaths we accept (the 5 wearable-relevant data types, ADR-021 ctx-3).
+WEARABLE_ALLOWED_PREFIXES = (
+    "com.samsung.shealth.tracker.heart_rate/",
+    "com.samsung.health.hrv/",
+)
+
+
+def _safe_wearable_rel_path(rel_path: str) -> str | None:
+    """Validate a phone-supplied export-relative path segment.
+
+    Must be relative (no leading ``/``), no ``..`` traversal, printable ASCII,
+    and length <= 300. Returns the cleaned value or None (caller 400s).
+    """
+    if not rel_path or len(rel_path) > 300:
+        return None
+    if rel_path.startswith("/") or "\\" in rel_path:
+        return None
+    if any(part in rel_path for part in ("..", "\x00")):
+        return None
+    if not all(32 < ord(ch) < 127 or ch in "\r\n\t" for ch in rel_path):
+        return None
+    return rel_path
+
+
+def store_wearable_file(inbox_root: Path, rel_path: str, data: bytes) -> Path:
+    """Write one uploaded export file under the wearable inbox, 0o600."""
+    dest = (inbox_root / rel_path).resolve()
+    inbox = inbox_root.resolve()
+    # Defense in depth: the validated path must stay under the inbox.
+    if inbox not in dest.parents:
+        raise ValueError(f"wearable path escapes inbox: {rel_path}")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(data)
+    try:
+        os.chmod(dest, 0o600)
+    except OSError:
+        pass
+    return dest
+
+
+def handle_wearable_file(inbox_root: Path, payload: dict[str, Any]) -> dict[str, Any]:
+    """Handle ``POST /api/v1/wearable/files``.
+
+    Expected body (ADR-021 D2): ``{relPath, sha256, b64}`` where
+    ``b64`` is the base64 of the raw export file bytes and ``sha256`` is the
+    hex digest the phone computed. Mirrors ``handle_boox_page``.
+    """
+    if not isinstance(payload, dict):
+        raise ValueError("wearable upload must be a JSON object")
+
+    rel_path = _safe_wearable_rel_path(str(payload.get("relPath") or ""))
+    if rel_path is None:
+        raise ValueError(f"invalid relPath: {payload.get('relPath')!r}")
+    if not any(rel_path.startswith(prefix) for prefix in WEARABLE_ALLOWED_PREFIXES):
+        raise ValueError(f"relPath not a recognized wearable export file: {rel_path!r}")
+
+    sha_hex = (payload.get("sha256") or "").strip().lower()
+    if len(sha_hex) != 64:
+        raise ValueError("sha256 must be a 64-char hex string")
+
+    b64 = payload.get("b64")
+    if not isinstance(b64, str):
+        raise ValueError("b64 must be a base64 string")
+    try:
+        data = base64.b64decode(b64.encode("ascii"), validate=True)
+    except (binascii.Error, ValueError) as exc:
+        raise ValueError(f"invalid base64 payload: {exc}") from exc
+
+    actual = hashlib.sha256(data).hexdigest()
+    expected = sha_hex
+    if expected and expected != actual:
+        raise ValueError(f"sha256 mismatch (expected {expected[:12]}…, got {actual[:12]}…)")
+
+    path = store_wearable_file(inbox_root, rel_path, data)
+    on_disk_sha = _sha256_hex(path.read_bytes())
+    return {
+        "accepted": 1,
+        "message": "OK",
+        "storedFiles": [str(path)],
+        "syncedIds": [rel_path],
+        "sha256": on_disk_sha,
+        "bytes": len(data),
+    }
+
+
+# ---------------------------------------------------------------------------
 # HTTP server (auth + routing)
 # ---------------------------------------------------------------------------
 
@@ -258,7 +367,7 @@ def _send_401(handler, path: str, peer: str, auth_log: Path) -> None:
     _json_response(handler, 401, {"message": "unauthorized", "hint": "Authorization: Bearer <pmbrs_sync_token>"})
 
 
-def _create_handler(args, token_store: SyncTokenStore, raw_root: Path, inbox_root: Path, auth_log: Path):
+def _create_handler(args, token_store: SyncTokenStore, raw_root: Path, inbox_root: Path, wearable_inbox_root: Path, auth_log: Path):
     class IngestHandler(http.server.BaseHTTPRequestHandler):
         server_version = "PMBRSHostIngest/0.2"
 
@@ -307,8 +416,10 @@ def _create_handler(args, token_store: SyncTokenStore, raw_root: Path, inbox_roo
             try:
                 if path == "/api/v1/artifacts/sync":
                     result = _handle_phone_sync(raw_root, payload)
-                else:  # /api/v1/boox/pages
+                elif path == "/api/v1/boox/pages":
                     result = handle_boox_page(inbox_root, payload)
+                else:  # /api/v1/wearable/files
+                    result = handle_wearable_file(wearable_inbox_root, payload)
             except ValueError as exc:
                 _json_response(self, 400, {"message": str(exc)})
                 return
@@ -336,6 +447,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="PMBRS host-side raw ingest endpoint (authed)")
     parser.add_argument("--raw-root", default=str(DEFAULT_RAW_ROOT), help="Directory where raw phone artifacts are stored")
     parser.add_argument("--inbox-root", default=str(DEFAULT_INBOX_ROOT), help="Inbox directory for Boox page uploads (staging)")
+    parser.add_argument("--wearable-inbox-root", default=str(WEARABLE_INBOX_ROOT), help="Inbox directory for watch biometrics export uploads (ADR-021)")
     parser.add_argument("--tokens", default=str(DEFAULT_TOKENS_PATH), help="Path to the sync token store JSON")
     parser.add_argument("--auth-log", default=str(DEFAULT_AUTH_LOG), help="Append-only auth/usage log")
     parser.add_argument("--port", type=int, default=8788, help="Local port to serve (tunnel + LAN devices connect here)")
@@ -345,8 +457,9 @@ def main() -> int:
     token_store = SyncTokenStore(args.tokens)
     raw_root = Path(args.raw_root)
     inbox_root = Path(args.inbox_root)
+    wearable_inbox_root = Path(args.wearable_inbox_root)
     auth_log = Path(args.auth_log)
-    handler = _create_handler(args, token_store, raw_root, inbox_root, auth_log)
+    handler = _create_handler(args, token_store, raw_root, inbox_root, wearable_inbox_root, auth_log)
 
     import http.server as _http
     import socketserver

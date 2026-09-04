@@ -33,14 +33,19 @@ class NetworkSyncClient(private val api: SyncApi) : SyncClient {
             val response = api.syncArtifacts(request)
             if (response.isSuccessful) {
                 val body = response.body()
-                if (body != null) {
-                    if (body.syncedIds.isNotEmpty()) {
-                        SyncResult.Success(body.syncedIds)
-                    } else {
-                        SyncResult.ClientFailure("Empty syncedIds in response")
-                    }
+                // Gson nulls fields ABSENT from the JSON (it bypasses Kotlin
+                // constructors/defaults), so a response lacking "syncedIds"
+                // arrives as null even though the model declares it non-null.
+                // Guard null-safely: without this, isNotEmpty() throws
+                // `Collection.isEmpty() on a null object reference`, which the
+                // catch below mislabels as a NetworkFailure. (PMBRSSyncWorker
+                // artifact path — the host artifact route previously omitted
+                // syncedIds while the wearable/boox routes included it.)
+                val syncedIds = body?.syncedIds
+                if (!syncedIds.isNullOrEmpty()) {
+                    SyncResult.Success(syncedIds)
                 } else {
-                    SyncResult.ClientFailure("Empty sync response body")
+                    SyncResult.ClientFailure("Missing or empty syncedIds in sync response")
                 }
             } else {
                 val code = response.code()

@@ -7,6 +7,7 @@ private const val KEY_SYNC_BASE_URL = "sync_base_url"
 private const val KEY_FALLBACK_SYNC_BASE_URL = "fallback_sync_base_url"
 private const val KEY_TRUSTED_NETWORK_ONLY = "trusted_network_only"
 private const val KEY_LAST_SYNC_LOG = "last_sync_log"
+private const val KEY_LAST_WEARABLE_LOG = "last_wearable_log"
 private const val KEY_AUTH_TOKEN = "auth_token"
 private const val KEY_SYNC_INTERVAL_HOURS = "sync_interval_hours"
 private const val KEY_RETENTION_DAYS = "retention_days"
@@ -53,6 +54,12 @@ class SyncSettings(context: Context) {
         get() = preferences.getString(KEY_LAST_SYNC_LOG, null)
         set(value) {
             preferences.edit().putString(KEY_LAST_SYNC_LOG, value).commit()
+        }
+
+    var lastWearableLog: String?
+        get() = preferences.getString(KEY_LAST_WEARABLE_LOG, null)
+        set(value) {
+            preferences.edit().putString(KEY_LAST_WEARABLE_LOG, value).commit()
         }
 
     var authToken: String?

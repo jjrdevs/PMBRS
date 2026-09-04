@@ -16,6 +16,7 @@ import com.pmbrs.mobile.settings.SyncSettings
 import com.pmbrs.mobile.sync.NetworkSyncClient
 import com.pmbrs.mobile.sync.SyncResult
 import com.pmbrs.mobile.sync.SyncService
+import com.pmbrs.mobile.wearable.WearableExportCollector
 import java.util.concurrent.TimeUnit
 
 private const val TAG = "PMBRSSyncWorker"
@@ -28,6 +29,8 @@ class PMBRSSyncWorker(
     companion object {
         const val TAG_WORK_REQUEST = "pmbrs_periodic_sync"
         internal var syncServiceProvider: ((Context) -> SyncService)? = null
+        /** Test seam: inject the wearable collector for unit tests. Null -> Wireup. */
+        internal var wearableCollector: ((Context) -> WearableExportCollector)? = null
 
         fun schedulePeriodicSync(context: Context, intervalHours: Long? = null): androidx.work.PeriodicWorkRequest {
             val settings = SyncSettings(context)
@@ -55,10 +58,8 @@ class PMBRSSyncWorker(
 
             return workRequest
         }
-    }
 
-    override suspend fun doWork(): Result {
-        return try {
+        internal suspend fun runArtifactPass(applicationContext: Context): androidx.work.ListenableWorker.Result {
             val settings = SyncSettings(applicationContext)
             com.pmbrs.mobile.telemetry.Telemetry.init(applicationContext)
             val networkStateHelper = NetworkStateHelper(applicationContext)
@@ -84,7 +85,7 @@ class PMBRSSyncWorker(
                 return Result.failure()
             }
 
-            when (val result = syncService.syncPending()) {
+            return when (val result = syncService.syncPending()) {
                 is SyncResult.Success -> {
                     val message = "Periodic sync succeeded: synced ${result.syncedIds.size} artifacts"
                     Log.i(TAG, message)
@@ -123,9 +124,60 @@ class PMBRSSyncWorker(
                     Result.failure()
                 }
             }
+        }
+
+        internal fun runWearablePushLog(applicationContext: Context) {
+            try {
+                val collector = wearableCollector?.invoke(applicationContext)
+                    ?: WearableExportCollector(applicationContext)
+                val summary = collector.collect()
+                val message = when {
+                    summary.pushed == 0 && summary.failed == 0 ->
+                        "Wearable push: ${summary.discovered} discovered, ${summary.pending} pending (nothing new to push)"
+                    summary.failed == 0 ->
+                        "Wearable push: ${summary.pushed}/${summary.pending} files pushed to hub"
+                    else ->
+                        "Wearable push: pushed ${summary.pushed}, failed ${summary.failed}" +
+                            (if (summary.errors.isNotEmpty())
+                                " first error: ${summary.errors.first().relPath} ${summary.errors.first().reason.take(80)}"
+                            else "")
+                }
+                if (summary.failed > 0) {
+                    Log.w(TAG, message)
+                } else {
+                    Log.i(TAG, message)
+                }
+                // Recorded in a SEPARATE key so the artifact pass's own
+                // `lastSyncLog` assertion (kept in PMBRSSyncWorkerTest) is not
+                // clobbered by the wearable pass running after it.
+                SyncSettings(applicationContext).lastWearableLog = message
+            } catch (e: Exception) {
+                // Surface the failure in lastWearableLog so it is visible to
+                // the user and to tests; log too. Do not rethrow -- the
+                // artifact pass Result is the worker's contract.
+                val message = "Wearable push: ${e::class.java.simpleName}: ${e.message?.take(120) ?: "unknown"}"
+                Log.w(TAG, message, e)
+                try {
+                    SyncSettings(applicationContext).lastWearableLog = message
+                } catch (e2: Exception) {
+                    Log.w(TAG, "Could not record wearable push failure in settings", e2)
+                }
+            }
+        }
+    }
+
+    override suspend fun doWork(): Result {
+        // Pass 1 (artifact sync) result is the worker contract. Pass 2
+        // (wearable push, ADR-021 D3) runs unconditionally after it so it
+        // still fires when the artifact pass is skipped (trusted-network
+        // gate) or fails, without ever altering that Result.
+        val artifactResult = try {
+            runArtifactPass(applicationContext)
         } catch (e: Exception) {
             Log.e(TAG, "Periodic sync worker failed", e)
             Result.retry()
         }
+        runWearablePushLog(applicationContext)
+        return artifactResult
     }
 }

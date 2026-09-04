@@ -106,4 +106,60 @@ class NetworkSyncClientTest {
         val result = client.syncArtifacts(listOf(artifact))
         assertTrue(result is SyncResult.ClientFailure)
     }
+
+    /**
+     * Regression test — PMBRSSyncWorker artifact-path NPE (2026-09-03).
+     *
+     * History: before the host fix (scripts/pmbrs_host_sync_ingest.py,
+     * _handle_phone_sync) and before the null-safe NetworkSyncClient guard,
+     * a 200 response body that omitted the "syncedIds" key — legal from
+     * the host's perspective then — deserialized into SyncResponse with
+     * `syncedIds == null` (Gson bypasses Kotlin constructors and defaults),
+     * and `body.syncedIds.isNotEmpty()` threw
+     *   `java.lang.NullPointerException: Attempt to invoke interface method
+     *    'boolean java.util.Collection.isEmpty()' on a null object reference`
+     * — mislabelled by the `catch` as a NetworkFailure and retried 3×
+     * every run (WearableCollectorSmokeTest run, logcat 22:46:25.926).
+     *
+     * This test feeds the phone the exact shape of that broken response
+     * and asserts it surfaces as a *classified* ClientFailure (never NPE,
+     * never swallowed-as-Success, never the wrong NetworkFailure class).
+     * If someone reverts the NetworkSyncClient guard the test fails; if
+     * someone reverts the host fix to omit syncedIds in production, the
+     * phone at least no longer NPEs (still ClientFailure, no retry storm).
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun syncArtifacts_missingSyncedIdsFieldReturnsClientFailureNotNpe() = runTest {
+        // Exact shape of the pre-fix host response — "syncedIds" key absent,
+        // not null, not empty. This is the shape that used to NPE the phone.
+        val brokenHostBody = """{"accepted":1,"message":"OK","storedFiles":["mobile/abc.json"]}"""
+        server.enqueue(MockResponse().setResponseCode(200).setBody(brokenHostBody))
+
+        val artifact = ArtifactEntity(
+            artifactId = "artifact-1",
+            source = "mobile",
+            payload = "{}",
+            createdAtEpochMs = 1000L,
+            schemaVersion = "1.0",
+            deviceAlias = "test-phone",
+            provenanceMetadataJson = "{}",
+            synced = false
+        )
+
+        val result = client.syncArtifacts(listOf(artifact))
+        // Must be a *classified* ClientFailure — never an NPE (which would
+        // escape to the catch and be labelled NetworkFailure), never Success.
+        assertTrue(
+            "Expected ClientFailure for missing syncedIds, got: $result",
+            result is SyncResult.ClientFailure
+        )
+        // And the message should be informative, not a bare exception string
+        // from a NullPointerException (which would say "...Collection.isEmpty()...").
+        val cf = result as SyncResult.ClientFailure
+        assertTrue(
+            "ClientFailure message should classify the shape problem: '${cf.error}'",
+            cf.error.contains("syncedIds", ignoreCase = true)
+        )
+    }
 }

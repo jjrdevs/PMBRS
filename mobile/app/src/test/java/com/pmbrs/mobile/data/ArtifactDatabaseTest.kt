@@ -36,6 +36,11 @@ class ArtifactDatabaseTest {
     @Test
     fun createsArtifactsTableWhenDatabaseFileExistsWithoutSchema() {
         val context: Context = RuntimeEnvironment.getApplication()
+        // The companion singleton persists across test classes in a single
+        // Gradle test worker (statics are not cleared between classes), so
+        // any other test that touched the DB can leave a stale INSTANCE.
+        // Force a clean slate so this test exercises the real create-path.
+        ArtifactDatabase.resetForTests()
         context.deleteDatabase("pmbrs-artifacts.db")
 
         val dbFile = context.getDatabasePath("pmbrs-artifacts.db")

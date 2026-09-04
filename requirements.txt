@@ -15,3 +15,16 @@ scikit-learn>=1.4
 # Self-host single binary (`mlflow server`) is the intended deployment — free,
 # local, reachable via the user's Cloudflare tunnel (per Q2 decision).
 mlflow>=2.11
+
+# Phase C — Dashboard on the domain route (docs/plans/dashboard-milestone-1.md)
+# Read-only JSON API (FastAPI) served by uvicorn under mobile-sync.jjrdev.com
+# (/api/v1/dashboard/*), passcode-gated. httpx backs the TestClient used in
+# tests/test_dashboard_auth.py.
+fastapi>=0.110
+uvicorn>=0.29
+httpx>=0.26
+
+# Galaxy Watch / wearable compaction (ADR-021): flat parquet exports for the
+# canonical 60-s windows + rollups. Optional at runtime (compact() degrades
+# gracefully without it) but declared so parquet is available on a fresh clone.
+pyarrow>=16
