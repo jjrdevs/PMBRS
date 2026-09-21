@@ -60,11 +60,11 @@ flowchart LR
 **The authority stack — each layer may only *read* from the one below it:**
 
 ```mermaid
-flowchart TD
-  R["0 · RAW — observed, verbatim, never mutated"]
-  C["1 · CANONICAL — 60-s grid, append-only, the record"]
-  D["2 · DERIVED — features, roll-ups, embeddings"]
-  I["3 · INTERPRETIVE — LLM synthesis, playbooks, digests"]
+flowchart TB
+  R[/"0 · RAW — observed, verbatim"/]
+  C[/"1 · CANONICAL — the 60-s grid record"/]
+  D[/"2 · DERIVED — features & rollups"/]
+  I[/"3 · INTERPRETIVE — LLM synthesis, labeled"/]
   R -->|"parse / normalize"| C
   C -->|"recompute from a fixed version"| D
   D -->|"train / synthesize"| I
