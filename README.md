@@ -60,14 +60,22 @@ flowchart LR
 **The authority stack — each layer may only *read* from the one below it:**
 
 ```mermaid
-flowchart BT
-  R["Layer 0 · RAW — observed, verbatim, never mutated"]
-  C["Layer 1 · CANONICAL — 60-s grid aligned, append-only, the record"]
-  D["Layer 2 · DERIVED — features, roll-ups, embeddings (recomputable)"]
-  I["Layer 3 · INTERPRETIVE — LLM synthesis, playbooks, digests (labeled)"]
-  R -->| "parse / normalize" | C
-  C -->| "recompute from a fixed version" | D
-  D -->| "train / synthesize" | I
+flowchart TD
+  R["0 · RAW — observed, verbatim, never mutated"]
+  C["1 · CANONICAL — 60-s grid, append-only, the record"]
+  D["2 · DERIVED — features, roll-ups, embeddings"]
+  I["3 · INTERPRETIVE — LLM synthesis, playbooks, digests"]
+  R -->|"parse / normalize"| C
+  C -->|"recompute from a fixed version"| D
+  D -->|"train / synthesize"| I
+  classDef raw fill:#fef2f2,stroke:#ef4444,color:#7f1d1d
+  classDef canon fill:#eef2ff,stroke:#6366f1,color:#312e81
+  classDef derived fill:#f0fdf4,stroke:#16a34a,color:#14532d
+  classDef interp fill:#fffbeb,stroke:#f59e0b,color:#78350f
+  class R raw
+  class C canon
+  class D derived
+  class I interp
 ```
 
 If you hold just one idea, hold this one: **raw data is never edited after the
@@ -201,7 +209,7 @@ sequenceDiagram
   API->>LLM: prompt over canonical artifacts
   LLM-->>API: labeled interpretive text
   API-->>You: synthesis + confidence
-  Note over You,API: if a claim is wrong → correction writes to the<br/>INTERPRETIVE tier only, never the record
+  Note over You,API: if a claim is wrong, correction writes to the INTERPRETIVE tier only, never the record
 ```
 
 Two guarantees hold for **every** view: the web layer has **no code path that
