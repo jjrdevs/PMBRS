@@ -29,6 +29,82 @@ interpretation layer**.
 
 ---
 
+## How to read PMBRS in one picture
+
+Two diagrams, in roughly one minute. Everything below is the detail behind these.
+
+**The flow — data moves one direction, and trust moves exactly as hard:**
+
+```mermaid
+flowchart LR
+  D["Devices<br/>Boox e-ink · Galaxy Watch 7<br/>Android collector · browser"]
+  N["Normalize & parse<br/>local vision-LLM OCR · HRV · 60-s grid"]
+  C[("CANONICAL<br/>immutable JSONL<br/>schema-versioned")]
+  F["Deterministic features<br/>stdlib + NumPy, versioned"]
+  E["Autoencoder<br/>16 → 12 → 8 → 12 → 16"]
+  EMB["8-d behavioral<br/>embedding"]
+  ROLL["Parquet + roll-ups<br/>→ DuckDB"]
+  API["FastAPI · passcode + TLS<br/>read-only"]
+  UI["Dashboards<br/>Streamlit · React + echarts"]
+  LLM["Opt-in LLM synthesis<br/>labeled · one-way out"]
+  D --> N --> C
+  C --> F --> E --> EMB
+  EMB --> ROLL
+  C --> ROLL
+  ROLL --> API --> UI
+  API -. "optional" .-> LLM -. "labeled, never written back" .-> UI
+  classDef canon fill:#eef2ff,stroke:#6366f1,color:#312e81;
+  class C,ROLL canon;
+```
+
+**The authority stack — each layer may only *read* from the one below it:**
+
+```mermaid
+flowchart BT
+  R["Layer 0 · RAW — observed, verbatim, never mutated"]
+  C["Layer 1 · CANONICAL — 60-s grid aligned, append-only, the record"]
+  D["Layer 2 · DERIVED — features, roll-ups, embeddings (recomputable)"]
+  I["Layer 3 · INTERPRETIVE — LLM synthesis, playbooks, digests (labeled)"]
+  R -->| "parse / normalize" | C
+  C -->| "recompute from a fixed version" | D
+  D -->| "train / synthesize" | I
+```
+
+If you hold just one idea, hold this one: **raw data is never edited after the
+fact, derived work is always recomputable, and the only layer that *talks* is
+the top one — and it is labeled.** Every other section is a consequence of that.
+
+---
+
+## Practical uses — what you can actually *do* with this
+
+PMBRS is an **instrument**, not an oracle. In concrete terms it lets you:
+
+- **Notice a pattern you'd have missed.** Journal says "couldn't sleep" several
+  nights; HRV dips in the same windows; app usage creeps later into the night.
+  None of that is a diagnosis — it's a *reproducible signal* worth a
+  professional's opinion, **with your own data in front of you**.
+- **Compare two days that feel the same but aren't.** The same journal phrase at
+  ~14:00; one day the 8-d embedding for that window sits with "focused" entries,
+  the other with "restless" ones. The embedding turns a vague feeling into a
+  **point you can look at and diff**.
+- **See your own baseline, not everyone else's.** The dashboard shows where a
+  window lands relative to your last eight weeks — and shows **missing as
+  missing, never zeroed**. The reference is *you, on similar days*.
+- **Read a week as a story, with the receipts attached.** The opt-in digest
+  summarizes what the canonical artifacts say and **links every claim back to
+  the windows it drew from** — open the source windows and check.
+- **Test an idea against your data before believing it.** "Do I focus better
+  with two breaks than one?" — a roll-up compares the two patterns over the
+  months you've logged. **The conclusion is yours; the evidence is reproducible.**
+
+Each of these rides on the layer beneath it: no canonical grid → no baseline;
+no embeddings → no comparable "feels-the-same" days; no read-only serving → no
+dashboard to ask. That bottom-up ordering is the whole reason the system is
+built the way it is.
+
+---
+
 ## Design pillars
 
 1. **Artifact-oriented** — everything is an immutable record with explicit
@@ -87,6 +163,50 @@ interpretation layer**.
 snapshot) · weekly *incremental training* (warm-start) · monthly *full
 retrain* + proxy-evaluation quality gate with rollback · early full retrain on
 detected feature drift.
+
+---
+
+## The dashboard (reference app)
+
+Where you actually *look at your data*. The Streamlit app is the **reference
+analytics dashboard**: read-only, passcode + TLS gated, 8 views. A React/Vite +
+echarts rewrite (7 views, auth gate, theming) is progressing in phases — the
+Streamlit app stays the reference until it converges.
+
+| View | What it shows |
+|---|---|
+| **Overview** | The front door — today's roll-up, active sources, what changed since yesterday |
+| **Timeline** | Every modality on the 60-s grid, overlaid; missingness shown as honest gaps |
+| **Weekly** | Seven-day distributions and roll-ups — your own baseline, not a norm |
+| **Modality** | One source at a time (HRV, journal, app-usage) to interrogate a single channel |
+| **Insights** | Embedding clusters + opt-in LLM synthesis + correction loop — labeled interpretive |
+| **Experiments** | Declared experiments and their declared scope — what's being tested, not asserted |
+| **Health** | Collector status, sync latency, battery experiments, artifact integrity |
+| **Settings** | Opt-in toggles, source enablement, theme — all read-only over the canonical store |
+
+**A single request, end to end:**
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant You
+  participant API as FastAPI (passcode + TLS)
+  participant Store as DuckDB / Parquet
+  participant LLM as LLM (opt-in)
+  You->>API: open a view (Bearer passcode)
+  API->>Store: read-only SELECT (canonical + roll-ups)
+  Store-->>API: rows
+  API-->>You: JSON → charts (missing rendered as gaps)
+  You->>API: request synthesis
+  API->>LLM: prompt over canonical artifacts
+  LLM-->>API: labeled interpretive text
+  API-->>You: synthesis + confidence
+  Note over You,API: if a claim is wrong → correction writes to the<br/>INTERPRETIVE tier only, never the record
+```
+
+Two guarantees hold for **every** view: the web layer has **no code path that
+writes to the canonical store** (enforced by tests), and **every missing sample
+is shown as missing** — never filled in as zero.
 
 ---
 
