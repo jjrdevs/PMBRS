@@ -29,6 +29,51 @@ interpretation layer**.
 
 ---
 
+## Why PMBRS exists
+
+> _A short version of this is in the_
+> [_case study_](https://portfolio.jjrdev.com/pmbbrs/case-study).
+> _The long version in plain prose is what PMBRS is actually for._
+
+I keep reporting to myself what I did, how I felt, and how the day went — and
+the report and the record rarely agree. Memory is an **unreliable narrator and
+an unreliable source of information about myself**: I can't fully trust my own
+self-report, and I know exactly where my biases sit. **PMBRS starts from that
+distrust.**
+
+The goal was never a score or a streak. It was to turn the signals I already
+generate — journal text on an e-ink reader, heart rate and HRV on a watch, app
+usage and battery on my phone — into **externalized insights I can act on**:
+
+- organize my thoughts through journaling so they become actionable;
+- let the data infer things I'd never catch on my own (when I actually slept,
+when I worked out);
+- find correlations along the vectors I wouldn't expect — sentiment against
+sleep amounts and cycles, browsing against work, workout consistency against
+everything else.
+
+The end goal is simple and stated up front: **actionable insights meaningful
+enough to change the way I live my life.** Everything in this system — the
+immutable record, the 60-second grid, the small inspectable model, the read-only
+dashboards — exists so that when a candidate insight shows up, I can check it
+against something that isn't my memory.
+
+---
+
+> ### 📖 Read the full case study
+> This README is the reference documentation. A longer, narrative **case
+> study** — the "why", the architecture, a walkthrough of the data pipeline,
+> the dashboard, and how the project was actually built — lives on the
+> portfolio:
+>
+> **<https://portfolio.jjrdev.com/pmbbrs/case-study>**
+>
+> It is the best single entry point if you want to understand the project's
+> intent before reading the specs below. The code and the docs here are the
+> ground truth; the case study is the human-readable guide to both.
+
+---
+
 ## How to read PMBRS in one picture
 
 Two diagrams, in roughly one minute. Everything below is the detail behind these.
@@ -395,6 +440,29 @@ it doesn't merge.
 
 The rule for everything above: **new modality = new adapter + one privacy
 sign-off + one entry in the modality catalog** — never a new pipeline.
+
+---
+
+## How this was built
+
+One honest note on process, because it's part of what this is: the design was
+not a solo grind.
+
+**The decisions were mine** — what PMBRS should be and should never do, the
+authority model, the 60-second grid, the read-only serve contract, which
+signals matter, and when the scope should stop.
+
+**A good deal of the implementation was done with an AI pair** — the parsing,
+the Kotlin collector, the tests, the dashboard rewrites, the bugs that showed
+up at two in the morning. I'd rather say that out loud than pretend at the
+solo-artisan version of this project, because the point of a case study is the
+reasoning, not the romance.
+
+What that process left behind is in the repo: the constitution, the specs, and
+the commit history are the record of where each decision came from — and the
+tests exist so "it works when I look at it" is never a valid end state. See the
+[full case study](https://portfolio.jjrdev.com/pmbbrs/case-study) for the
+longer version.
 
 ---
 
