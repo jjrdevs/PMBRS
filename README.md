@@ -32,7 +32,7 @@ interpretation layer**.
 ## Why PMBRS exists
 
 > _A short version of this is in the_
-> [_case study_](https://portfolio.jjrdev.com/pmbbrs/case-study).
+> [_case study_](https://portfolio.jjrdev.com/pmbrs/case-study).
 > _The long version in plain prose is what PMBRS is actually for._
 
 I keep reporting to myself what I did, how I felt, and how the day went — and
